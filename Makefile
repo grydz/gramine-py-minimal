@@ -1,6 +1,6 @@
 ARCH_LIBDIR ?= /lib/$(shell $(CC) -dumpmachine)
 
-SGX_SIGNER_KEY ?= /opt/gramine/Pal/src/host/Linux-SGX/signer/enclave-key.pem
+SGX_SIGNER_KEY ?= enclave-test-key.pem
 
 ifeq ($(DEBUG),1)
 GRAMINE_LOG_LEVEL = debug

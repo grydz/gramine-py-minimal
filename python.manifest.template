@@ -8,11 +8,7 @@ loader.env.PYTHONDONTWRITEBYTECODE = "1"
 # No more insecure args
 # loader.insecure__use_cmdline_argv = true
 
-# Not working
-loader.argv0_override = "{{ entrypoint }} scripts/main.py"
-
-# Doesn't work either
-# loader.argv_src_file = "file:scripts/args"
+loader.argv_src_file = "file:scripts/args"
 
 sys.enable_sigterm_injection = true
 

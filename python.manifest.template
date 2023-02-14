@@ -1,57 +1,39 @@
-loader.preload = "file:{{ gramine.libos }}"
+loader.entrypoint = "file:{{ gramine.libos }}"
 libos.entrypoint = "{{ entrypoint }}"
-loader.log_level = "all"
+loader.log_level = "{{ log_level }}"
 
 loader.env.LD_LIBRARY_PATH = "{{ python.stdlib }}/lib:/lib:/usr/lib:{{ arch_libdir }}:/usr/{{ arch_libdir }}"
 loader.env.PYTHONDONTWRITEBYTECODE = "1"
-
-# No more insecure args
-# loader.insecure__use_cmdline_argv = true
+loader.env.PYTHONPYCACHEPREFIX = "/tmp"
+loader.env.PYTHONUNBUFFERED = "1"
 
 loader.argv_src_file = "file:scripts/args"
 
-sys.enable_sigterm_injection = true
-
 loader.pal_internal_mem_size = "128M"
 
-fs.mount.lib.type = "chroot"
-fs.mount.lib.path = "/lib"
-fs.mount.lib.uri = "file:{{ gramine.runtimedir() }}/"
+sys.enable_extra_runtime_domain_names_conf = true
 
-fs.mount.lib2.type = "chroot"
-fs.mount.lib2.path = "{{ arch_libdir }}"
-fs.mount.lib2.uri = "file:{{ arch_libdir }}"
-
-fs.mount.usr.type = "chroot"
-fs.mount.usr.path = "/usr"
-fs.mount.usr.uri = "file:/usr"
-
-fs.mount.etc.type = "chroot"
-fs.mount.etc.path = "/etc"
-fs.mount.etc.uri = "file:/etc"
-
-fs.mount.tmp.type = "chroot"
-fs.mount.tmp.path = "/tmp"
-fs.mount.tmp.uri = "file:/tmp"
-
-fs.mount.pyhome.type = "chroot"
-fs.mount.pyhome.path = "{{ python.stdlib }}"
-fs.mount.pyhome.uri = "file:{{ python.stdlib }}"
-
-fs.mount.pydisthome.type = "chroot"
-fs.mount.pydisthome.path = "{{ python.distlib }}"
-fs.mount.pydisthome.uri = "file:{{ python.distlib }}"
-
-fs.mount.locallib.type = "chroot"
-fs.mount.locallib.path = "/usr/local/lib"
-fs.mount.locallib.uri  = "file:/usr/local/lib"
+fs.mounts = [
+  { path = "/lib", uri = "file:{{ gramine.runtimedir() }}" },
+  { path = "{{ arch_libdir }}", uri = "file:{{ arch_libdir }}" },
+  { path = "/usr", uri = "file:/usr" },
+  { path = "/etc", uri = "file:/etc" },
+  { path = "{{ python.stdlib }}", uri = "file:{{ python.stdlib }}" },
+  { path = "{{ python.distlib }}", uri = "file:{{ python.distlib }}" },
+  { path = "/usr/local/lib", uri = "file:/usr/local/lib" },
+  { path = "/tmp", type = "tmpfs" },
+]
 
 sgx.nonpie_binary = true
-sgx.enclave_size = "4G"
+sgx.remote_attestation = "dcap"
+sgx.enclave_size = "{{ enclave_size }}"
 sgx.thread_num = 256
+sgx.isvprodid = 1
+sgx.isvsvn = 1
 
 sgx.trusted_files = [
   "file:{{ entrypoint }}",
+  "file:{{ gramine.libos }}",
   "file:{{ gramine.runtimedir() }}/",
   "file:{{ arch_libdir }}/",
   "file:/usr/{{ arch_libdir }}/",
@@ -59,18 +41,15 @@ sgx.trusted_files = [
   "file:{{ python.distlib }}/",
   "file:{{ python.get_path('stdlib', vars={'installed_base': '/usr/local'}) }}/",
   "file:/etc/apt/apt.conf.d/",
-  "file:/etc/default/apport",
   "file:/etc/nsswitch.conf",
   "file:/etc/group",
   "file:/etc/passwd",
-  "file:/etc/host.conf",
-  "file:/etc/hosts",
   "file:/etc/gai.conf",
-  "file:/etc/resolv.conf",
   "file:/etc/fstab",
   "file:/etc/localtime",
+  "file:/etc/mime.types",
   "file:/usr/lib/ssl/openssl.cnf",
   "file:/usr/share/zoneinfo/UTC",
-  "file:scripts/main.py",
-  "file:scripts/args"
+  "file:scripts/args",
+  "file:scripts/main.py"
 ]

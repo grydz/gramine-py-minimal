@@ -1,7 +1,8 @@
 ARCH_LIBDIR ?= /lib/$(shell $(CC) -dumpmachine)
 
-SGX_SIGNER_KEY ?= enclave-test-key.pem
+ENCLAVE_SIZE ?= 4G
 
+SGX_SIGNER_KEY ?= enclave-test-key.pem
 ifeq ($(DEBUG),1)
 GRAMINE_LOG_LEVEL = debug
 else
@@ -16,7 +17,9 @@ endif
 
 %.manifest: %.manifest.template
 	gramine-manifest \
+		-Dlog_level=$(GRAMINE_LOG_LEVEL) \
 		-Darch_libdir=$(ARCH_LIBDIR) \
+		-Denclave_size=$(ENCLAVE_SIZE) \
 		-Dentrypoint=$(realpath $(shell sh -c "command -v python3")) \
 		$< > $@
 

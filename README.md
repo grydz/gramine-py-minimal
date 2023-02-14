@@ -17,4 +17,3 @@ $ make SGX=1
 ```console
 $ gramine-sgx ./python
 ```
-
